@@ -1,10 +1,8 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Patient = require('../models/Patient');
+const patientController = require("../controllers/patientController");
 
-// Create a new patient
+router.post("/", patientController.addPatient);
+router.put("/:id/address", patientController.updateAddress);
 
-router.post('/', async (req, res) => {
-    try{
-        const 
-    }
+module.exports = router;
