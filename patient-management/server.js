@@ -24,11 +24,11 @@ mongoose.connect(process.env.MONGO_URI)
 app.use("/api/patients", patientRoutes);
 app.use("/api/appointments", appointmentRoutes);
 
-// Cron Job - Every January 1st
+// Every January 1st
 cron.schedule("0 0 1 1 *", async () => {
     try {
         await Patient.updateMany({}, { $inc: { age: 1 } });
-        console.log("Patient ages updated successfully!");
+        console.log("Patient age updated successfully!");
     } catch (err) {
         console.error("Error updating patient ages:", err);
     }

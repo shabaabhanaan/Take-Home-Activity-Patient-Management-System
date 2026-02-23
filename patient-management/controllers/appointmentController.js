@@ -1,17 +1,29 @@
 const Appointment = require("../models/Appointment");
 
-// Add Appointment
 exports.addAppointment = async (req, res) => {
     try {
-        const appointment = new Appointment(req.body);
+        const appointmentCount = await Appointment.countDocuments();
+
+        const newId = "APT" + (appointmentCount + 1).toString().padStart(3, "0");
+
+        const appointment = new Appointment({
+            appointmentId: newId,
+            ...req.body
+        });
+
         await appointment.save();
-        res.status(201).json({ message: "Appointment created", appointment });
+
+        res.status(201).json({
+            message: "Appointment created",
+            appointmentId: appointment.appointmentId,
+            appointment
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
-// Check octor DAvailability
+// Check doctor Availability
 exports.checkAvailability = async (req, res) => {
     try {
         const { doctorName, date, time } = req.query;
@@ -43,7 +55,8 @@ exports.checkAvailability = async (req, res) => {
 // Cancel Appointment
 exports.cancelAppointment = async (req, res) => {
     try {
-        const appointment = await Appointment.findById(req.params.id);
+        // Find appointment by custom appointmentId
+        const appointment = await Appointment.findOne({ appointmentId: req.params.id });
 
         if (!appointment) {
             return res.status(404).json({ message: "Appointment not found" });
@@ -56,7 +69,6 @@ exports.cancelAppointment = async (req, res) => {
             message: "Appointment cancelled successfully",
             appointment
         });
-
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
